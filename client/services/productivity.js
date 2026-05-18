@@ -1,7 +1,7 @@
 import { request } from "@/lib/api-client";
 
 export function listHabits(token) {
-  return request("/habits", { token });
+  return request("/habits", { token, cacheMs: 15_000 });
 }
 
 export function createHabit(token, payload) {
@@ -36,7 +36,7 @@ export function upsertHabitEntry(token, habitId, payload) {
 }
 
 export function listReminders(token, query = "") {
-  return request(`/reminders${query ? `?${query}` : ""}`, { token });
+  return request(`/reminders${query ? `?${query}` : ""}`, { token, cacheMs: 10_000 });
 }
 
 export function createReminder(token, payload) {
@@ -63,7 +63,7 @@ export function deleteReminder(token, reminderId) {
 }
 
 export function listNotes(token, query = "") {
-  return request(`/notes${query ? `?${query}` : ""}`, { token });
+  return request(`/notes${query ? `?${query}` : ""}`, { token, cacheMs: 10_000 });
 }
 
 export function createNote(token, payload) {

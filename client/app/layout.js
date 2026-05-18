@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Roboto_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { NetworkBanner } from "@/components/system/network-banner";
 
 const robotoMono = Roboto_Mono({
   subsets: ["latin"],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
       className={`h-full antialiased ${robotoMono.variable}`}
     >
       <body className="min-h-full flex flex-col">
+        <NetworkBanner />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 import { request } from "@/lib/api-client";
 
 export function listProjects(token, query = "") {
-  return request(`/projects${query ? `?${query}` : ""}`, { token });
+  return request(`/projects${query ? `?${query}` : ""}`, { token, cacheMs: 15_000 });
 }
 
 export function createProject(token, payload) {
@@ -28,7 +28,7 @@ export function deleteProject(token, projectId) {
 }
 
 export function listProjectTasks(token, projectId, query = "") {
-  return request(`/projects/${projectId}/tasks${query ? `?${query}` : ""}`, { token });
+  return request(`/projects/${projectId}/tasks${query ? `?${query}` : ""}`, { token, cacheMs: 8_000 });
 }
 
 export function createTask(token, projectId, payload) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ export default function RemindersPage() {
   const [error, setError] = useState("");
   const [filterCompleted, setFilterCompleted] = useState("");
 
-  async function loadReminders() {
+  const loadReminders = useCallback(async () => {
     if (!token) return;
     try {
       const query = new URLSearchParams();
@@ -32,12 +32,12 @@ export default function RemindersPage() {
     } catch (err) {
       setError(err.message);
     }
-  }
+  }, [filterCompleted, token]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadReminders();
-  }, [token, filterCompleted]);
+  }, [loadReminders]);
 
   async function onCreate(e) {
     e.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ export default function HabitsPage() {
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
-  async function loadHabits() {
+  const loadHabits = useCallback(async () => {
     if (!token) return;
     try {
       const items = await listHabits(token);
@@ -28,12 +28,12 @@ export default function HabitsPage() {
     } catch (err) {
       setError(err.message);
     }
-  }
+  }, [token]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadHabits();
-  }, [token]);
+  }, [loadHabits]);
 
   async function onCreate(e) {
     e.preventDefault();

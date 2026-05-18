@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ export default function NotesPage() {
   const [filterProjectId, setFilterProjectId] = useState("");
   const [error, setError] = useState("");
 
-  async function loadProjects() {
+  const loadProjects = useCallback(async () => {
     if (!token) return;
     try {
       const res = await listProjects(token);
@@ -27,9 +27,9 @@ export default function NotesPage() {
     } catch (err) {
       setError(err.message);
     }
-  }
+  }, [token]);
 
-  async function loadNotes() {
+  const loadNotes = useCallback(async () => {
     if (!token) return;
     try {
       const query = new URLSearchParams();
@@ -39,17 +39,17 @@ export default function NotesPage() {
     } catch (err) {
       setError(err.message);
     }
-  }
+  }, [filterProjectId, token]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadProjects();
-  }, [token]);
+  }, [loadProjects]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadNotes();
-  }, [token, filterProjectId]);
+  }, [loadNotes]);
 
   async function onCreate(e) {
     e.preventDefault();

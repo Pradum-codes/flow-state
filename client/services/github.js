@@ -1,7 +1,7 @@
 import { request } from "@/lib/api-client";
 
 export function getGitHubStatus(token) {
-  return request("/integrations/github/status", { token });
+  return request("/integrations/github/status", { token, cacheMs: 10_000 });
 }
 
 export function connectGitHub(token, payload) {
@@ -27,9 +27,9 @@ export function syncGitHub(token) {
 }
 
 export function getGitHubSummary(token, query = "") {
-  return request(`/github/summary${query ? `?${query}` : ""}`, { token });
+  return request(`/github/summary${query ? `?${query}` : ""}`, { token, cacheMs: 10_000 });
 }
 
 export function getGitHubActivity(token, query = "") {
-  return request(`/github/activity${query ? `?${query}` : ""}`, { token });
+  return request(`/github/activity${query ? `?${query}` : ""}`, { token, cacheMs: 8_000 });
 }
