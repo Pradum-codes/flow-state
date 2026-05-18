@@ -5,11 +5,18 @@ const prisma = require("../../config/prisma");
 const env = require("../../config/env");
 const validate = require("../../middleware/validate");
 const { requireAuth } = require("../../middleware/auth");
+const { createInMemoryRateLimiter } = require("../../middleware/security/rate-limit");
 const { registerSchema, loginSchema } = require("./auth.validation");
 const ApiError = require("../../utils/api-error");
 const { success } = require("../../utils/response");
 
 const router = express.Router();
+const authLimiter = createInMemoryRateLimiter({
+  windowMs: env.authRateLimitWindowMs,
+  max: env.authRateLimitMax,
+  keyFn: (req) => `${req.ip || "unknown"}:${req.body.email || "anonymous"}`,
+  message: "Too many authentication attempts. Please try again later.",
+});
 
 function buildToken(userId) {
   return jwt.sign({}, env.jwtSecret, {
@@ -18,7 +25,7 @@ function buildToken(userId) {
   });
 }
 
-router.post("/register", validate(registerSchema), async (req, res, next) => {
+router.post("/register", authLimiter, validate(registerSchema), async (req, res, next) => {
   try {
     const existing = await prisma.user.findUnique({
       where: { email: req.body.email.toLowerCase() },
@@ -51,7 +58,7 @@ router.post("/register", validate(registerSchema), async (req, res, next) => {
   }
 });
 
-router.post("/login", validate(loginSchema), async (req, res, next) => {
+router.post("/login", authLimiter, validate(loginSchema), async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
       where: { email: req.body.email.toLowerCase() },

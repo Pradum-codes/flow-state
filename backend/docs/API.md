@@ -1,280 +1,109 @@
-# FlowState Backend API (Phase 1 + Phase 2 + Phase 3)
+# FlowState Backend API (Phase 1-5)
 
 Base URL: `http://localhost:4000/api/v1`
 
-## Auth
-
-### `POST /auth/register`
-Create user and return JWT.
-
-Request:
-```json
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "Flow User"
-}
-```
-
-Response `201`:
-```json
-{
-  "success": true,
-  "data": {
-    "token": "jwt-token",
-    "user": {
-      "id": "cuid",
-      "email": "user@example.com",
-      "name": "Flow User"
-    }
-  }
-}
-```
-
-### `POST /auth/login`
-Login and return JWT.
-
-Request:
-```json
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-### `GET /auth/me`
-Get current authenticated user.
-
-Header:
-`Authorization: Bearer <token>`
-
-## Projects
-
-All routes below require bearer token.
-
-### `POST /projects`
-Create project.
-
-Request:
-```json
-{
-  "name": "FlowState API",
-  "description": "Phase 1 implementation",
-  "status": "ACTIVE"
-}
-```
-
-### `GET /projects`
-List user projects with pagination.
-
-Query params:
-- `page` (default `1`)
-- `limit` (default `20`, max `50`)
-- `sort` (`createdAt|updatedAt|name`)
-- `order` (`asc|desc`)
-
-### `GET /projects/:id`
-Get single owned project.
-
-### `PATCH /projects/:id`
-Update owned project.
-
-### `DELETE /projects/:id`
-Delete owned project.
-
-## Tasks
-
-All routes below require bearer token.
-
-### `POST /projects/:projectId/tasks`
-Create task under owned project.
-
-Request:
-```json
-{
-  "title": "Implement auth route",
-  "description": "POST /auth/register",
-  "status": "TODO",
-  "priority": "HIGH",
-  "dueDate": "2026-05-25T10:00:00.000Z"
-}
-```
-
-### `GET /projects/:projectId/tasks`
-List tasks with optional filters and pagination.
-
-Query params:
-- `status` (`TODO|IN_PROGRESS|DONE`)
-- `priority` (`LOW|MEDIUM|HIGH`)
-- `dueFrom` (ISO datetime)
-- `dueTo` (ISO datetime)
-- `page` (default `1`)
-- `limit` (default `30`, max `100`)
-
-### `PATCH /tasks/:id`
-Update owned task fields (`title`, `description`, `status`, `priority`, `dueDate`).
-
-### `DELETE /tasks/:id`
-Delete owned task.
+## Core Headers
+- `Authorization: Bearer <token>` for protected routes.
+- `X-Request-Id` is returned on every response.
 
 ## Health
-
 ### `GET /health`
-Simple health endpoint.
+Liveness check.
 
-Response:
-```json
-{
-  "success": true,
-  "data": {
-    "status": "ok"
-  }
-}
-```
+### `GET /health/readiness`
+Readiness check with dependency verification (database).
+
+## Auth
+### `POST /auth/register`
+### `POST /auth/login`
+### `GET /auth/me`
+
+Auth endpoints are protected by stricter anti-bruteforce rate limits.
+
+## Projects
+### `POST /projects`
+### `GET /projects`
+### `GET /projects/:id`
+### `PATCH /projects/:id`
+### `DELETE /projects/:id`
+
+## Tasks
+### `POST /projects/:projectId/tasks`
+### `GET /projects/:projectId/tasks`
+Query:
+- `status`: `TODO|IN_PROGRESS|DONE`
+- `priority`: `LOW|MEDIUM|HIGH`
+- `dueFrom`, `dueTo`: ISO datetime
+- `page`, `limit`
+
+### `PATCH /tasks/:id`
+### `DELETE /tasks/:id`
 
 ## Habits
-
-All routes below require bearer token.
-
 ### `POST /habits`
-Create habit.
-
-```json
-{
-  "title": "Daily coding",
-  "description": "At least 1 hour"
-}
-```
-
 ### `GET /habits`
-List owned habits.
-
 ### `PATCH /habits/:id`
-Update owned habit.
-
 ### `DELETE /habits/:id`
-Delete owned habit.
-
 ### `POST /habits/:id/entries`
-Create or update a daily habit entry (upsert by date).
-
-```json
-{
-  "date": "2026-05-20T00:00:00.000Z",
-  "completed": true,
-  "notes": "Worked on backend"
-}
-```
-
 ### `GET /habits/:id/entries`
-List entries with optional filtering and pagination.
-
-Query params:
-- `from` (ISO datetime)
-- `to` (ISO datetime)
-- `page` (default `1`)
-- `limit` (default `30`, max `100`)
 
 ## Reminders
-
-All routes below require bearer token.
-
 ### `POST /reminders`
-Create reminder.
-
-```json
-{
-  "title": "Review sprint board",
-  "dueAt": "2026-05-21T10:00:00.000Z",
-  "recurrence": "WEEKLY"
-}
-```
-
 ### `GET /reminders`
-List reminders.
-
-Query params:
-- `isCompleted` (`true|false`)
-- `from` (ISO datetime)
-- `to` (ISO datetime)
-
 ### `PATCH /reminders/:id`
-Update owned reminder.
-
 ### `DELETE /reminders/:id`
-Delete owned reminder.
 
 ## Notes
-
-All routes below require bearer token.
-
 ### `POST /notes`
-Create personal or project-linked note.
-
-```json
-{
-  "title": "API notes",
-  "content": "Remember to add metrics endpoint",
-  "projectId": "project-cuid-optional"
-}
-```
-
 ### `GET /notes`
-List notes.
-
-Query params:
-- `projectId` (optional)
-
 ### `PATCH /notes/:id`
-Update owned note.
-
 ### `DELETE /notes/:id`
-Delete owned note.
 
 ## GitHub Integration
-
-All routes below require bearer token.
-
 ### `POST /integrations/github/connect`
-Connect or update GitHub account link.
-
-```json
-{
-  "username": "octocat",
-  "accessToken": "github_pat_optional"
-}
-```
-
 ### `DELETE /integrations/github/disconnect`
-Disconnect GitHub integration for current user.
-
 ### `GET /integrations/github/status`
-Check GitHub connection status.
-
 ### `POST /github/sync`
-Fetch latest public user events from GitHub API and persist normalized activities.
-
 ### `GET /github/activity`
-List synced GitHub activities.
-
-Query params:
-- `repo` (example: `owner/repo`)
-- `from` (ISO datetime)
-- `to` (ISO datetime)
-- `page` (default `1`)
-- `limit` (default `30`, max `100`)
-
 ### `GET /github/summary`
-Aggregate summary for synced activities.
 
-Query params:
-- `repo` (optional)
-- `from` (ISO datetime)
-- `to` (ISO datetime)
+## Analytics and Dashboard (Phase 4)
+### `GET /dashboard/overview`
+Returns dashboard-ready aggregates:
+- active projects
+- due-today tasks
+- upcoming/overdue reminders
+- habits today summary
+- GitHub connection + last 7 day event count
+
+### `GET /analytics/productivity-score`
+Query:
+- `from` (ISO datetime, optional)
+- `to` (ISO datetime, optional)
+Computes a weighted score (tasks 50%, habits 30%, reminders 20%).
+
+### `GET /analytics/weekly-progress`
+Query:
+- `weeks` (1-24, default `8`)
+Returns week buckets with counts for tasks, habits, reminders, and GitHub events.
+
+### `GET /analytics/heatmap`
+Query:
+- `days` (7-365, default `90`)
+Returns day buckets for activity heatmap rendering.
+
+Timezone strategy for analytics rollups: `UTC`.
+
+## Security and Reliability (Phase 5)
+Implemented globally:
+- secure HTTP headers
+- request body size limits
+- structured request logging with request id
+- global API rate limits
+- auth-specific stricter rate limits
+- CORS allowlist support via env
 
 ## Error Contract
-
-All errors follow:
 ```json
 {
   "success": false,
@@ -291,26 +120,18 @@ Common codes:
 - `NOT_FOUND`
 - `API_ERROR`
 - `INTERNAL_ERROR`
+- `DEPENDENCY_UNAVAILABLE`
+
+## Environment Knobs (Phase 5)
+- `CORS_ORIGIN` (default `*`, comma-separated origins supported)
+- `REQUEST_BODY_LIMIT` (default `1mb`)
+- `RATE_LIMIT_WINDOW_MS` (default `60000`)
+- `RATE_LIMIT_MAX` (default `120`)
+- `AUTH_RATE_LIMIT_WINDOW_MS` (default `60000`)
+- `AUTH_RATE_LIMIT_MAX` (default `10`)
 
 ## Local Setup
-
-1. Copy env file:
-```bash
-cp .env.example .env
-```
-2. Install dependencies:
-```bash
-npm install
-```
-3. Generate Prisma client:
-```bash
-npx prisma generate
-```
-4. Create/apply database schema:
-```bash
-npx prisma db push
-```
-5. Run server:
-```bash
-npm run dev
-```
+1. `npm install`
+2. `npx prisma generate`
+3. `npx prisma db push`
+4. `npm run dev`

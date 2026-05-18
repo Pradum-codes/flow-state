@@ -27,4 +27,10 @@ module.exports = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  corsOrigin: process.env.CORS_ORIGIN || "*",
+  requestBodyLimit: process.env.REQUEST_BODY_LIMIT || "1mb",
+  rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000),
+  rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 120),
+  authRateLimitWindowMs: Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 60_000),
+  authRateLimitMax: Number(process.env.AUTH_RATE_LIMIT_MAX || 10),
 };
