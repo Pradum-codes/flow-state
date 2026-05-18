@@ -9,6 +9,9 @@ import { useAuth } from "@/components/providers/auth-provider";
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/projects", label: "Projects" },
+  { href: "/habits", label: "Habits" },
+  { href: "/reminders", label: "Reminders" },
+  { href: "/notes", label: "Notes" },
 ];
 
 export function AppShell({ children }) {

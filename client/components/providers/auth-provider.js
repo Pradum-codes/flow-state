@@ -20,10 +20,13 @@ export function AuthProvider({ children }) {
       try {
         const res = await getMe(saved);
         setUser(res.user);
-      } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
-        setToken(null);
-        setUser(null);
+      } catch (error) {
+        // Clear only when token is actually invalid/expired.
+        if (error?.status === 401 || error?.status === 403) {
+          window.localStorage.removeItem(STORAGE_KEY);
+          setToken(null);
+          setUser(null);
+        }
       }
     }
 
