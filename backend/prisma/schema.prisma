@@ -34,6 +34,10 @@ model User {
   updatedAt    DateTime  @updatedAt
   projects     Project[]
   tasks        Task[]
+  habits       Habit[]
+  habitEntries HabitEntry[]
+  reminders    Reminder[]
+  notes        Note[]
 }
 
 model Project {
@@ -46,6 +50,7 @@ model Project {
   updatedAt   DateTime      @updatedAt
   owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   tasks       Task[]
+  notes       Note[]
 
   @@index([ownerId])
   @@index([createdAt])
@@ -70,4 +75,67 @@ model Task {
   @@index([status])
   @@index([priority])
   @@index([dueDate])
+}
+
+model Habit {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  isActive    Boolean      @default(true)
+  ownerId     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  entries     HabitEntry[]
+
+  @@index([ownerId])
+  @@index([createdAt])
+}
+
+model HabitEntry {
+  id        String   @id @default(cuid())
+  habitId   String
+  ownerId   String
+  date      DateTime
+  completed Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([ownerId])
+  @@index([date])
+}
+
+model Reminder {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueAt       DateTime
+  isCompleted Boolean  @default(false)
+  recurrence  String?
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([dueAt])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String?
+  content   String
+  ownerId   String
+  projectId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@index([projectId])
+  @@index([createdAt])
 }

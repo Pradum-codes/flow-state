@@ -8,11 +8,15 @@
   },
   "scripts": {
     "dev": "node --watch src/server.js",
+    "dev:local": "bash -lc 'set -a; source .env.dev; set +a; node --watch src/server.js'",
+    "dev:prod-env": "bash -lc 'set -a; source .env.prod; set +a; node --watch src/server.js'",
     "start": "node src/server.js",
     "test": "node --test",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "db:push:local": "bash -lc 'set -a; source .env.dev; set +a; prisma db push'",
+    "db:push:prod-env": "bash -lc 'set -a; source .env.prod; set +a; prisma db push'"
   },
   "keywords": [
     "flowstate",

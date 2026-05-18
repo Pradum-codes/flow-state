@@ -1,4 +1,4 @@
-# FlowState Backend API (Phase 1)
+# FlowState Backend API (Phase 1 + Phase 2)
 
 Base URL: `http://localhost:4000/api/v1`
 
@@ -131,6 +131,105 @@ Response:
   }
 }
 ```
+
+## Habits
+
+All routes below require bearer token.
+
+### `POST /habits`
+Create habit.
+
+```json
+{
+  "title": "Daily coding",
+  "description": "At least 1 hour"
+}
+```
+
+### `GET /habits`
+List owned habits.
+
+### `PATCH /habits/:id`
+Update owned habit.
+
+### `DELETE /habits/:id`
+Delete owned habit.
+
+### `POST /habits/:id/entries`
+Create or update a daily habit entry (upsert by date).
+
+```json
+{
+  "date": "2026-05-20T00:00:00.000Z",
+  "completed": true,
+  "notes": "Worked on backend"
+}
+```
+
+### `GET /habits/:id/entries`
+List entries with optional filtering and pagination.
+
+Query params:
+- `from` (ISO datetime)
+- `to` (ISO datetime)
+- `page` (default `1`)
+- `limit` (default `30`, max `100`)
+
+## Reminders
+
+All routes below require bearer token.
+
+### `POST /reminders`
+Create reminder.
+
+```json
+{
+  "title": "Review sprint board",
+  "dueAt": "2026-05-21T10:00:00.000Z",
+  "recurrence": "WEEKLY"
+}
+```
+
+### `GET /reminders`
+List reminders.
+
+Query params:
+- `isCompleted` (`true|false`)
+- `from` (ISO datetime)
+- `to` (ISO datetime)
+
+### `PATCH /reminders/:id`
+Update owned reminder.
+
+### `DELETE /reminders/:id`
+Delete owned reminder.
+
+## Notes
+
+All routes below require bearer token.
+
+### `POST /notes`
+Create personal or project-linked note.
+
+```json
+{
+  "title": "API notes",
+  "content": "Remember to add metrics endpoint",
+  "projectId": "project-cuid-optional"
+}
+```
+
+### `GET /notes`
+List notes.
+
+Query params:
+- `projectId` (optional)
+
+### `PATCH /notes/:id`
+Update owned note.
+
+### `DELETE /notes/:id`
+Delete owned note.
 
 ## Error Contract
 
