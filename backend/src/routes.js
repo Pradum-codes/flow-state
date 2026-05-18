@@ -5,6 +5,7 @@ const taskRoutes = require("./modules/tasks/tasks.routes");
 const habitRoutes = require("./modules/habits/habits.routes");
 const reminderRoutes = require("./modules/reminders/reminders.routes");
 const noteRoutes = require("./modules/notes/notes.routes");
+const githubRoutes = require("./modules/github/github.routes");
 const { success } = require("./utils/response");
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.use("/", taskRoutes);
 router.use("/habits", habitRoutes);
 router.use("/reminders", reminderRoutes);
 router.use("/notes", noteRoutes);
+router.use("/", githubRoutes);
 
 module.exports = router;

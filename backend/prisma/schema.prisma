@@ -38,6 +38,8 @@ model User {
   habitEntries HabitEntry[]
   reminders    Reminder[]
   notes        Note[]
+  githubConnection GitHubConnection?
+  githubActivities GitHubActivity[]
 }
 
 model Project {
@@ -138,4 +140,36 @@ model Note {
   @@index([ownerId])
   @@index([projectId])
   @@index([createdAt])
+}
+
+model GitHubConnection {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  username     String
+  accessToken  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastSyncedAt DateTime?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities   GitHubActivity[]
+
+  @@index([username])
+}
+
+model GitHubActivity {
+  id            String   @id @default(cuid())
+  userId        String
+  connectionId  String
+  eventId       String   @unique
+  eventType     String
+  repoName      String?
+  occurredAt    DateTime
+  payload       Json?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connection    GitHubConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, occurredAt])
+  @@index([repoName])
+  @@index([eventType])
 }

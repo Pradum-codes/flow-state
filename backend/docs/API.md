@@ -1,4 +1,4 @@
-# FlowState Backend API (Phase 1 + Phase 2)
+# FlowState Backend API (Phase 1 + Phase 2 + Phase 3)
 
 Base URL: `http://localhost:4000/api/v1`
 
@@ -230,6 +230,47 @@ Update owned note.
 
 ### `DELETE /notes/:id`
 Delete owned note.
+
+## GitHub Integration
+
+All routes below require bearer token.
+
+### `POST /integrations/github/connect`
+Connect or update GitHub account link.
+
+```json
+{
+  "username": "octocat",
+  "accessToken": "github_pat_optional"
+}
+```
+
+### `DELETE /integrations/github/disconnect`
+Disconnect GitHub integration for current user.
+
+### `GET /integrations/github/status`
+Check GitHub connection status.
+
+### `POST /github/sync`
+Fetch latest public user events from GitHub API and persist normalized activities.
+
+### `GET /github/activity`
+List synced GitHub activities.
+
+Query params:
+- `repo` (example: `owner/repo`)
+- `from` (ISO datetime)
+- `to` (ISO datetime)
+- `page` (default `1`)
+- `limit` (default `30`, max `100`)
+
+### `GET /github/summary`
+Aggregate summary for synced activities.
+
+Query params:
+- `repo` (optional)
+- `from` (ISO datetime)
+- `to` (ISO datetime)
 
 ## Error Contract
 
